@@ -5,3 +5,10 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
+Event.create(
+    start: DateTime.new(2018, 7, 4, 8),
+    end: DateTime.new(2018,7,4,23),
+    description: "Fourth of July" 
+)
+
