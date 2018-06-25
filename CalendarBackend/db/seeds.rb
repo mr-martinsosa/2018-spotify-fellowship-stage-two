@@ -12,3 +12,8 @@ Event.create(
     description: "Fourth of July" 
 )
 
+Event.create(
+    start: DateTime.new(2018, 6, 1, 5),
+    end: DateTime.new(2018,6,1,10),
+    description: "First Day of June" 
+)
