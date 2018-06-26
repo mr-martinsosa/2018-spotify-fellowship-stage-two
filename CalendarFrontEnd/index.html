@@ -66,6 +66,12 @@
           <div class="container-fluid">
             <div class="row">
                 <form id="new-event">
+                    <label for "start-month">Start Month:</label>
+                    <input type="date" id="start-month" name="start-month" required pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}">
+
+                    <label for "end-month">End Month:</label>
+                    <input type="date" id="end-month" name="end-month" required pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}">
+
                     <label for "Start">Start Time: </label>
                     <input type="time" id="start-time" name="start-time">
 
