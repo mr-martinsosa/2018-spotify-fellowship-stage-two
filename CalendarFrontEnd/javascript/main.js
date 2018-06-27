@@ -43,7 +43,6 @@ document.addEventListener("DOMContentLoaded", (event) => {
                 eventContainer.innerHTML = `Description: ${description} <br> Start Time: ${start[0]} : ${startTime[0]} <br> End Time: ${end[0]} : ${endTime[0]} <br> <input type="Submit" id="${data.id}-delete" value="Delete">`
                 allEvents.appendChild(eventContainer)
         }
-        deleteEvent(daysPerMonth, currentMonth)
     })
     
     // Build Calendar
@@ -53,7 +52,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
     eventDays(daysPerMonth, currentMonth)
 
     // Delete any Event that shows on a day's page
-    // deleteEvent(daysPerMonth, currentMonth)
+    deleteEvent(daysPerMonth, currentMonth)
         
 
     // Loop through all events, edit(PUT) based on id of event (id is attached to button as class)
@@ -73,10 +72,6 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
         descriptionInfo = document.getElementById("description").value 
 
-        console.log(monthStartInfo)
-        console.log(monthEndInfo)
-        console.log(timeEndInfo)
-        console.log(timeStartInfo)
         if(timeStartInfo !== null && timeEndInfo !== null){
             axios.post(`http://localhost:3000/api/v1/events/`,{
                 start: monthStartInfo + "T" + timeStartInfo,
@@ -145,7 +140,7 @@ function eventDays(daysPerMonth, currentMonth){
                     if(start[0] == i){ //in js, "01" == 1 returns true
                         // currentEvents.innerHTML = `Description: ${data[j].description} Start: ${data[j].start} End:${data[j].end} <input type="Submit" id="${data[j].id}-edit" value="Edit"> <input type="Submit" id="${data[j].id}-delete" value="Delete">`
                         // currentEvents.insertAdjacentHTML('afterbegin', ` Description: ${data[j].description} Start: ${data[j].start} End:${data[j].end} <input type="Submit" id="${data[j].id}-edit" value="Edit"> <input type="Submit" id="${data[j].id}-delete" value="Delete">`)
-                        dayEvents.push(`Description: ${data[j].description} Start: ${data[j].start} End:${data[j].end} <input type="Submit" id="${data[j].id}-edit" value="Edit"> <input type="Submit" id="${data[j].id}-delete" value="Delete">`)
+                        dayEvents.push(`Description: ${data[j].description} Start: ${data[j].start} End:${data[j].end} `)
                     }
                     
                 }
