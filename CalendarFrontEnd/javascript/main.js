@@ -43,6 +43,53 @@ document.addEventListener("DOMContentLoaded", (event) => {
         }
     })
     
+    // Build Calendar
+    createCalendar(daysPerMonth, currentMonth, firstDay)
+    
+    // Attach days with events to it
+    eventDays(daysPerMonth, currentMonth)
+
+    // Delete any Event that shows on a day's page
+    // deleteEvent(daysPerMonth, currentMonth)
+        
+
+    // Loop through all events, edit(PUT) based on id of event (id is attached to button as class)
+    // may need another modal for edit
+
+    // On click submit, POST event
+    
+    onClickSubmit = document.getElementById("new-event")
+    console.log(onClickSubmit)
+    onClickSubmit.addEventListener("submit", function(event){
+    
+        // grab form values
+        monthStartInfo = document.getElementById("start-month").value
+        monthEndInfo = document.getElementById("end-month").value
+
+        timeStartInfo = document.getElementById("start-time").value
+        timeEndInfo = document.getElementById("end-time").value
+
+        descriptionInfo = document.getElementById("description").value 
+
+        console.log(monthStartInfo)
+        console.log(monthEndInfo)
+        console.log(timeEndInfo)
+        console.log(timeStartInfo)
+        if(timeStartInfo !== null && timeEndInfo !== null){
+            console.log(monthStartInfo + "T" + timeStartInfo)   
+            console.log("hi") 
+            axios.post(`http://localhost:3000/api/v1/events/`,{
+                start: monthStartInfo + "T" + timeStartInfo,
+                end: monthEndInfo + "T" + timeEndInfo,
+                description: descriptionInfo
+            })
+        }
+    })
+    
+})
+
+// Build the calendar
+function createCalendar(daysPerMonth, currentMonth, firstDay){
     let day = 1
     for(let i = 1; i < 6; i++){ 
         for(let j = 1; j < 8; j++){
@@ -78,8 +125,11 @@ document.addEventListener("DOMContentLoaded", (event) => {
             }
         }
     }
+}
 
-
+// Build out days with events
+function eventDays(daysPerMonth, currentMonth){
+    let dayEvents = []
     // Loop through all days, attach click event listener and ajax their info
     for(let i = 1; i < daysPerMonth[currentMonth]+1; i++){
         onClickDay = document.getElementById(i)
@@ -92,66 +142,37 @@ document.addEventListener("DOMContentLoaded", (event) => {
                 for(let j = 0; j < data.length; j++){
                     start = data[j].start.split('-')
                     start = start[2].split("T")
-                    if(parseInt(start[0]) == i){
-                        currentEvents.innerHTML = `Description: ${data[j].description} Start: ${data[j].start} End:${data[j].end} <input type="Submit" id="${data[j].id}-edit" value="Edit"> <input type="Submit" id="${data[j].id}-delete" value="Delete">`
-                    }else{
-                        currentEvents.innerHTML = "<h4>No Events</h4>"
+                    if(start[0] == i){ //in js, "01" == 1 returns true
+                        // currentEvents.innerHTML = `Description: ${data[j].description} Start: ${data[j].start} End:${data[j].end} <input type="Submit" id="${data[j].id}-edit" value="Edit"> <input type="Submit" id="${data[j].id}-delete" value="Delete">`
+                        // currentEvents.insertAdjacentHTML('afterbegin', ` Description: ${data[j].description} Start: ${data[j].start} End:${data[j].end} <input type="Submit" id="${data[j].id}-edit" value="Edit"> <input type="Submit" id="${data[j].id}-delete" value="Delete">`)
+                        dayEvents.push(`Description: ${data[j].description} Start: ${data[j].start} End:${data[j].end} <input type="Submit" id="${data[j].id}-edit" value="Edit"> <input type="Submit" id="${data[j].id}-delete" value="Delete">`)
                     }
+                    
+                }
+                if(dayEvents.length > 0){
+                    // console.log(dayEvents)
+                    currentEvents.innerHTML = dayEvents.join("<br>")
                 }
                 
             })
             .catch(function(error){
                 currentEvents.innerHTML = "<h4>No Events</h4>"
             })
+           
         })
     }
+}
 
- // Error here
-        // Loop through all events, delete based on id of event (id is attached to button as class)
-        for(let i = 1; i < daysPerMonth[currentMonth]+1; i++){
-            onClickDelete = document.getElementById(`${i}-delete`)
-            onClickDelete.addEventListener(("click"), function() {
-                currentEvents = document.getElementById("current-events")
-                    
-                // DELETE data
-                axios.delete(`http://localhost:3000/api/v1/events/${i}`, {params: { id: i}})
-                location.reload()
-            })
-
-        }
-
-    // Loop through all events, edit(PUT) based on id of event (id is attached to button as class)
-    // may need another modal for edit
-
-    // On click submit, POST event
-
-    onClickSubmit = document.getElementById("submit")
-    console.log(onClickSubmit)
-    onClickSubmit.addEventListener(("submit"), function(event){
-        event.preventDefault()
-    
-        // grab form values
-        monthStartInfo = JSON.stringify(document.getElementById("start-month").value)
-        monthEndInfo = document.getElementById("end-month").value
-
-        timeStartInfo = document.getElementById("start-time").value
-        timeEndInfo = document.getElementById("end-time").value
-
-        descriptionInfo = document.getElementById("description").value 
-
-        console.log(monthStartInfo)
-        console.log(monthEndInfo)
-        console.log(timeEndInfo)
-        console.log(timeStartInfo)
-        if(timeStartInfo !== null && timeEndInfo !== null){
-            console.log(monthStartInfo + "T" + timeStartInfo)   
-            console.log("hi") 
-            axios.post(`http://localhost:3000/api/v1/events/`,{
-                start: monthStartInfo + "T" + timeStartInfo,
-                end: monthEndInfo + "T" + timeEndInfo,
-                description: descriptionInfo
-            })
-        }
-    })
-    
-})
+function deleteEvent(daysPerMonth, currentMonth){
+    // Loop through all events, delete based on id of event (id is attached to button as class)
+    for(let i = 1; i < daysPerMonth[currentMonth]+1; i++){
+        onClickDelete = document.getElementById(`${i}-delete`)
+        onClickDelete.addEventListener(("click"), function() {
+            currentEvents = document.getElementById("current-events")
+                
+            // DELETE data
+            axios.delete(`http://localhost:3000/api/v1/events/${i}`, {params: { id: i}})
+            location.reload()
+        })
+    }
+}
