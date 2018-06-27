@@ -34,13 +34,16 @@ document.addEventListener("DOMContentLoaded", (event) => {
     axios.get("http://localhost:3000/api/v1/events").then(function(response){
         for(let i = 0; i < response.data.length; i++){   
             let data = response.data[i]
-                start = data.start
-                end = data.end
+                start = data.start.split("T")
+                startTime = start[1].split(".")
+                end = data.end.split("T")
+                endTime = end[1].split(".")
                 description = data.description
                 eventContainer = document.createElement('p')
-                eventContainer.innerHTML = `Description: ${description} Start Time: ${start} End Time: ${end} <input type="Submit" id="${data.id}-delete" value="Delete">`
+                eventContainer.innerHTML = `Description: ${description} <br> Start Time: ${start[0]} : ${startTime[0]} <br> End Time: ${end[0]} : ${endTime[0]} <br> <input type="Submit" id="${data.id}-delete" value="Delete">`
                 allEvents.appendChild(eventContainer)
         }
+        deleteEvent(daysPerMonth, currentMonth)
     })
     
     // Build Calendar
@@ -59,7 +62,6 @@ document.addEventListener("DOMContentLoaded", (event) => {
     // On click submit, POST event
     
     onClickSubmit = document.getElementById("new-event")
-    console.log(onClickSubmit)
     onClickSubmit.addEventListener("submit", function(event){
     
         // grab form values
@@ -76,8 +78,6 @@ document.addEventListener("DOMContentLoaded", (event) => {
         console.log(timeEndInfo)
         console.log(timeStartInfo)
         if(timeStartInfo !== null && timeEndInfo !== null){
-            console.log(monthStartInfo + "T" + timeStartInfo)   
-            console.log("hi") 
             axios.post(`http://localhost:3000/api/v1/events/`,{
                 start: monthStartInfo + "T" + timeStartInfo,
                 end: monthEndInfo + "T" + timeEndInfo,
@@ -152,6 +152,9 @@ function eventDays(daysPerMonth, currentMonth){
                 if(dayEvents.length > 0){
                     // console.log(dayEvents)
                     currentEvents.innerHTML = dayEvents.join("<br>")
+                    dayEvents.length = 0
+                }else{
+                    currentEvents.innerHTML = "<h4>No Events</h4>"
                 }
                 
             })
