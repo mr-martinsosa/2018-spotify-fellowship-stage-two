@@ -43,6 +43,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
                 eventContainer.innerHTML = `Description: ${description} <br> Start Time: ${start[0]} : ${startTime[0]} <br> End Time: ${end[0]} : ${endTime[0]} <br> <input type="Submit" id="${data.id}-delete" value="Delete">`
                 allEvents.appendChild(eventContainer)
         }
+        deleteEvent(daysPerMonth, currentMonth)
     })
     
     // Build Calendar
@@ -50,17 +51,14 @@ document.addEventListener("DOMContentLoaded", (event) => {
     
     // Attach days with events to it
     eventDays(daysPerMonth, currentMonth)
-
-    // Delete any Event that shows on a day's page
-    deleteEvent(daysPerMonth, currentMonth)
         
-
     // Loop through all events, edit(PUT) based on id of event (id is attached to button as class)
     // may need another modal for edit
 
     // On click submit, POST event
     
     onClickSubmit = document.getElementById("new-event")
+    
     onClickSubmit.addEventListener("submit", function(event){
     
         // grab form values
@@ -71,8 +69,10 @@ document.addEventListener("DOMContentLoaded", (event) => {
         timeEndInfo = document.getElementById("end-time").value
 
         descriptionInfo = document.getElementById("description").value 
-
+        
+        
         if(timeStartInfo !== null && timeEndInfo !== null){
+            console.log("I AM POSTING")
             axios.post(`http://localhost:3000/api/v1/events/`,{
                 start: monthStartInfo + "T" + timeStartInfo,
                 end: monthEndInfo + "T" + timeEndInfo,
@@ -80,6 +80,9 @@ document.addEventListener("DOMContentLoaded", (event) => {
             })
         }
     })
+
+    // Delete any Event that shows on a day's page
+    
     
 })
 
@@ -101,7 +104,7 @@ function createCalendar(daysPerMonth, currentMonth, firstDay){
                 dayRow.appendChild(aDay)
                 week.appendChild(dayRow)
                 ++day
-            }else if(day > 1){ // set rest of days
+            }else if(day > 1 && day < daysPerMonth){ // set rest of days
                 let week = document.getElementById(`week-${i}`)
                 let dayRow = document.createElement('td')
                 dayRow.id = day
@@ -132,7 +135,7 @@ function eventDays(daysPerMonth, currentMonth){
             currentEvents = document.getElementById("current-events")
             
             // GET data
-            axios.get(`http://localhost:3000/api/v1/events/`).then(function(response){
+            axios.get(`/api/v1/events/`).then(function(response){
                 data = response.data
                 for(let j = 0; j < data.length; j++){
                     start = data[j].start.split('-')
@@ -165,12 +168,16 @@ function deleteEvent(daysPerMonth, currentMonth){
     // Loop through all events, delete based on id of event (id is attached to button as class)
     for(let i = 1; i < daysPerMonth[currentMonth]+1; i++){
         onClickDelete = document.getElementById(`${i}-delete`)
-        onClickDelete.addEventListener(("click"), function() {
+        if(onClickDelete === null){
+            continue;
+        }
+        onClickDelete.addEventListener("click", function() {
+            console.log("hello")
             currentEvents = document.getElementById("current-events")
                 
             // DELETE data
             axios.delete(`http://localhost:3000/api/v1/events/${i}`, {params: { id: i}})
             location.reload()
-        })
-    }
+            })
+        }
 }
